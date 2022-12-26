@@ -7,6 +7,8 @@
 #include <functional>
 #include <algorithm>
 #include <unordered_map>
+#include <iostream>
+#include <unordered_set>
 
 using namespace std;
 
@@ -100,7 +102,9 @@ namespace utility
 
 		if (!ptr)
 		{
-			return 4;
+			cout << "Can't open file " << pathToArchive << endl;
+
+			return 3;
 		}
 
 		fwrite(data.data(), sizeof(wchar_t), data.size(), ptr);
@@ -123,6 +127,13 @@ namespace utility
 			{ 'm', { "<more>", '+' } },
 			{ 'l', { "<less>", '-' } }
 		};
+		static unordered_set<char> numericTags =
+		{
+			'a',
+			'A',
+			's',
+			'S'
+		};
 		string result;
 		size_t currentIndex = 0;
 		string_view currentFormat;
@@ -130,9 +141,9 @@ namespace utility
 		{
 			string replaceString;
 
-			if (currentFormat.find('t') != string_view::npos)
+			if (currentFormat.contains('t'))
 			{
-				if (currentFormat.find('c') != string_view::npos)
+				if (currentFormat.contains('c'))
 				{
 					replaceString = format("{}{}c{} {}", '{', currentIndex++, '}', isLocalized ? json::utility::toUTF8JSON("сек", 1251) : "sec");
 				}
@@ -143,6 +154,11 @@ namespace utility
 			}
 			else
 			{
+				if (!currentFormat.contains('n') && ranges::any_of(currentFormat, [](char c) { return numericTags.contains(c); }))
+				{
+					replaceString += 'n';
+				}
+
 				for (char c : currentFormat)
 				{
 					if (!isalpha(c))
@@ -156,9 +172,9 @@ namespace utility
 					{
 						const auto& [tag, symbol] = (it->second);
 
-						if (currentFormat.find('n') != string_view::npos)
+						if (currentFormat.contains('n'))
 						{
-							if (currentFormat.find('c') != string_view::npos)
+							if (currentFormat.contains('c'))
 							{
 								replaceString.insert(0, format("{}{}{}{}c{}</>", tag, symbol, '{', currentIndex++, '}'));
 							}
@@ -169,7 +185,7 @@ namespace utility
 						}
 						else
 						{
-							if (currentFormat.find('c') != string_view::npos)
+							if (currentFormat.contains('c'))
 							{
 								replaceString.insert(0, format("{}{}{}{}c{}%</>", tag, symbol, '{', currentIndex++, '}'));
 							}
