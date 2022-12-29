@@ -205,9 +205,9 @@ namespace utility
 					}
 				}
 
-				if (replaceString.size() == 1 && replaceString[0] == 'n')
+				if (replaceString.empty())
 				{
-					replaceString = "{n}%";
+					replaceString = format("{}{}n{}%", '{', currentIndex++, '}');
 				}
 			}
 
