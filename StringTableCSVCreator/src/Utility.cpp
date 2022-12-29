@@ -204,6 +204,11 @@ namespace utility
 						replaceString += c;
 					}
 				}
+
+				if (replaceString.empty())
+				{
+					replaceString = "{}%";
+				}
 			}
 
 			result += replaceString;
