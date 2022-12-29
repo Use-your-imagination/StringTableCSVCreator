@@ -15,7 +15,12 @@ EXPORT void createCSV(const char* inputModuleName, const char* inputModuleDescri
 {
 	string moduleName = utility::getModuleName(inputModuleName);
 
-	ofstream(moduleName + ".csv") << "Key,SourceString" << endl
+	if (!filesystem::exists("generated_csv"))
+	{
+		filesystem::create_directory("generated_csv");
+	}
+
+	ofstream(format("generated_csv\\{}.csv", moduleName)) << "Key,SourceString" << endl
 		<< format(R"("{0}Name","{0}")", moduleName) << endl
 		<< format(R"("{}Description","{}")", moduleName, utility::convertDescription(inputModuleDescription)) << endl
 		<< format(R"("Platinum{}Description","{}")", moduleName, utility::convertDescription(inputPlatinumModuleDescription)) << endl;
@@ -29,9 +34,9 @@ EXPORT void createJSON(const char* inputModuleName, const char* inputModuleDescr
 	json::JSONBuilder builder(CP_UTF8);
 	vector<jsonObject> children;
 
-	if (!filesystem::exists("localization_files"))
+	if (!filesystem::exists("generated_json"))
 	{
-		filesystem::create_directory("localization_files");
+		filesystem::create_directory("generated_json");
 	}
 
 	appendArray(utility::makeObject(moduleName, inputModuleName, inputModuleName), children);
@@ -41,7 +46,7 @@ EXPORT void createJSON(const char* inputModuleName, const char* inputModuleDescr
 	builder["Namespace"] = moduleName;
 	builder["Children"] = move(children);
 
-	ofstream(format("localization_files\\{}.json", moduleName)) << builder;
+	ofstream(format("generated_json\\{}.json", moduleName)) << builder;
 }
 
 EXPORT int applyLocalization(const char* inputModuleName)
@@ -67,7 +72,7 @@ EXPORT int applyLocalization(const char* inputModuleName)
 	string moduleName = utility::getModuleName(inputModuleName);
 	filesystem::path pathToArchive = pathToProject / "Content" / "Localization" / "Game" / "ru" / "Game.archive";
 	json::JSONParser archive(utility::fromUTF16ToUTF8(pathToArchive));
-	json::JSONParser module(ifstream(format("localization_files\\{}.json", moduleName)));
+	json::JSONParser module(ifstream(format("generated_json\\{}.json", moduleName)));
 
 	for (const jsonObject& value : archive.getArray("Subnamespaces"))
 	{
