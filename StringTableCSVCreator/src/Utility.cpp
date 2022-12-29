@@ -207,7 +207,7 @@ namespace utility
 
 				if (replaceString.size() == 1 && replaceString[0] == 'n')
 				{
-					replaceString = "{}%";
+					replaceString = "{n}%";
 				}
 			}
 
