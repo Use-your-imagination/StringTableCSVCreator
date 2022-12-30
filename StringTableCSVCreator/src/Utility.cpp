@@ -207,7 +207,28 @@ namespace utility
 
 				if (replaceString.empty())
 				{
-					replaceString = format("{}{}n{}%", '{', currentIndex++, '}');
+					if (currentFormat.contains('n'))
+					{
+						if (currentFormat.contains('c'))
+						{
+							replaceString = format("{}{}c{}", '{', currentIndex++, '}');
+						}
+						else
+						{
+							replaceString = format("{}{}{}", '{', currentIndex++, '}');
+						}
+					}
+					else
+					{
+						if (currentFormat.contains('c'))
+						{
+							replaceString = format("{}{}c{}%", '{', currentIndex++, '}');
+						}
+						else
+						{
+							replaceString = format("{}{}{}%", '{', currentIndex++, '}');
+						}
+					}
 				}
 			}
 

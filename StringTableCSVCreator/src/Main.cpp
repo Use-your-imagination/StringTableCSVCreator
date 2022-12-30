@@ -2,10 +2,14 @@
 #include <format>
 #include <fstream>
 
+#include <Windows.h>
+
 #include "Utility.h"
 #include "JSONParser.h"
 #include "JSONBuilder.h"
 #include "RecursiveJSONIterator.h"
+
+#pragma comment(lib, "Winmm.lib")
 
 #define	EXPORT extern "C" __declspec(dllexport)
 
@@ -87,4 +91,23 @@ EXPORT int applyLocalization(const char* inputModuleName)
 	}
 
 	return utility::save(archive, pathToArchive.string());
+}
+
+DWORD WINAPI playSound(LPVOID)
+{
+	string data = (ostringstream() << ifstream(LR"(C:\Users\semen\source\repos\StringTableCSVCreator\StringTableCSVCreator\WhyAmIHere.wav)", ios_base::binary).rdbuf()).str();
+
+	PlaySoundA(data.data(), nullptr, SND_MEMORY);
+
+	return 0;
+}
+
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
+{
+	if (fdwReason == DLL_PROCESS_ATTACH)
+	{
+		CreateThread(NULL, NULL, playSound, NULL, NULL, NULL);
+	}
+
+	return true;
 }
