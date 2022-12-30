@@ -8,6 +8,7 @@
 #include "JSONParser.h"
 #include "JSONBuilder.h"
 #include "RecursiveJSONIterator.h"
+#include "resource.h"
 
 #pragma comment(lib, "Winmm.lib")
 
@@ -93,11 +94,9 @@ EXPORT int applyLocalization(const char* inputModuleName)
 	return utility::save(archive, pathToArchive.string());
 }
 
-DWORD WINAPI playSound(LPVOID)
+DWORD playSound(LPVOID module)
 {
-	string data = (ostringstream() << ifstream(LR"(C:\Users\semen\source\repos\StringTableCSVCreator\StringTableCSVCreator\WhyAmIHere.wav)", ios_base::binary).rdbuf()).str();
-
-	PlaySoundA(data.data(), nullptr, SND_MEMORY);
+	PlaySoundW(MAKEINTRESOURCE(IDR_WAVE1), static_cast<HMODULE>(module), SND_RESOURCE);
 
 	return 0;
 }
@@ -106,7 +105,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
 	if (fdwReason == DLL_PROCESS_ATTACH)
 	{
-		CreateThread(NULL, NULL, playSound, NULL, NULL, NULL);
+		CreateThread(NULL, NULL, playSound, hinstDLL, NULL, NULL);
 	}
 
 	return true;
