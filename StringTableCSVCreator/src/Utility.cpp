@@ -154,10 +154,7 @@ namespace utility
 			}
 			else
 			{
-				if (!currentFormat.contains('n') && ranges::any_of(currentFormat, [](char c) { return numericTags.contains(c); }))
-				{
-					replaceString += 'n';
-				}
+				bool containsN = currentFormat.contains('n') || (!currentFormat.contains('n') && ranges::any_of(currentFormat, [](char c) { return numericTags.contains(c); }));
 
 				for (char c : currentFormat)
 				{
@@ -174,7 +171,7 @@ namespace utility
 
 						if (currentFormat.contains('n'))
 						{
-							if (currentFormat.contains('c'))
+							if (containsN)
 							{
 								replaceString.insert(0, format("{}{}{}{}c{}</>", tag, symbol, '{', currentIndex++, '}'));
 							}
@@ -185,7 +182,7 @@ namespace utility
 						}
 						else
 						{
-							if (currentFormat.contains('c'))
+							if (containsN)
 							{
 								replaceString.insert(0, format("{}{}{}{}c{}%</>", tag, symbol, '{', currentIndex++, '}'));
 							}
@@ -209,7 +206,7 @@ namespace utility
 				{
 					if (currentFormat.contains('n'))
 					{
-						if (currentFormat.contains('c'))
+						if (containsN)
 						{
 							replaceString = format("{}{}c{}", '{', currentIndex++, '}');
 						}
@@ -220,7 +217,7 @@ namespace utility
 					}
 					else
 					{
-						if (currentFormat.contains('c'))
+						if (containsN)
 						{
 							replaceString = format("{}{}c{}%", '{', currentIndex++, '}');
 						}
