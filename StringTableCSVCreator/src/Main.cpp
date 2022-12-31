@@ -18,24 +18,26 @@ using namespace std;
 
 EXPORT void createCSV(const char* inputModuleName, const char* inputModuleDescription, const char* inputPlatinumModuleDescription)
 {
-	string moduleName = utility::getModuleName(inputModuleName);
+	string lower = utility::getModuleNameLowerCase(inputModuleName);
+	string upper = utility::getModuleNameUpperCase(inputModuleName);
 
 	if (!filesystem::exists("generated_csv"))
 	{
 		filesystem::create_directory("generated_csv");
 	}
 
-	ofstream(format("generated_csv\\{}.csv", moduleName)) << "Key,SourceString" << endl
-		<< format(R"("{0}Name","{0}")", moduleName) << endl
-		<< format(R"("{}Description","{}")", moduleName, utility::convertDescription(inputModuleDescription)) << endl
-		<< format(R"("Platinum{}Description","{}")", moduleName, utility::convertDescription(inputPlatinumModuleDescription)) << endl;
+	ofstream(format("generated_csv\\{}.csv", lower)) << "Key,SourceString" << endl
+		<< format(R"("{}Name","{}")", upper, lower) << endl
+		<< format(R"("{}Description","{}")", upper, utility::convertDescription(inputModuleDescription)) << endl
+		<< format(R"("Platinum{}Description","{}")", upper, utility::convertDescription(inputPlatinumModuleDescription)) << endl;
 }
 
 EXPORT void createJSON(const char* inputModuleName, const char* inputModuleDescription, const char* inputPlatinumModuleDescription, const char* localizedModuleDescription, const char* localizedPlatinumModuleDescription)
 {
 	using namespace json::utility;
 
-	string moduleName = utility::getModuleName(inputModuleName);
+	string lower = utility::getModuleNameLowerCase(inputModuleName);
+	string upper = utility::getModuleNameUpperCase(inputModuleName);
 	json::JSONBuilder builder(CP_UTF8);
 	vector<jsonObject> children;
 
@@ -44,14 +46,14 @@ EXPORT void createJSON(const char* inputModuleName, const char* inputModuleDescr
 		filesystem::create_directory("generated_json");
 	}
 
-	appendArray(utility::makeObject(moduleName, inputModuleName, inputModuleName), children);
-	appendArray(utility::makeObject(moduleName + "Description", utility::convertDescription(inputModuleDescription), utility::convertDescription(localizedModuleDescription, true)), children);
-	appendArray(utility::makeObject(format("Platinum{}Description", moduleName), utility::convertDescription(inputPlatinumModuleDescription), utility::convertDescription(localizedPlatinumModuleDescription, true)), children);
+	appendArray(utility::makeObject(format("{}Name", upper), lower, lower), children);
+	appendArray(utility::makeObject(upper + "Description", utility::convertDescription(inputModuleDescription), utility::convertDescription(localizedModuleDescription, true)), children);
+	appendArray(utility::makeObject(format("Platinum{}Description", upper), utility::convertDescription(inputPlatinumModuleDescription), utility::convertDescription(localizedPlatinumModuleDescription, true)), children);
 
-	builder["Namespace"] = moduleName;
+	builder["Namespace"] = upper;
 	builder["Children"] = move(children);
 
-	ofstream(format("generated_json\\{}.json", moduleName)) << builder;
+	ofstream(format("generated_json\\{}.json", lower)) << builder;
 }
 
 EXPORT int applyLocalization(const char* inputModuleName)
@@ -74,16 +76,17 @@ EXPORT int applyLocalization(const char* inputModuleName)
 		return 2;
 	}
 
-	string moduleName = utility::getModuleName(inputModuleName);
+	string lower = utility::getModuleNameLowerCase(inputModuleName);
+	string upper = utility::getModuleNameUpperCase(inputModuleName);
 	filesystem::path pathToArchive = pathToProject / "Content" / "Localization" / "Game" / "ru" / "Game.archive";
 	json::JSONParser archive(utility::fromUTF16ToUTF8(pathToArchive));
-	json::JSONParser module(ifstream(format("generated_json\\{}.json", moduleName)));
+	json::JSONParser module(ifstream(format("generated_json\\{}.json", lower)));
 
 	for (const jsonObject& value : archive.getArray("Subnamespaces"))
 	{
 		const jsonObject& tem = get<jsonObject>(value.data[0].second);
 
-		if (tem.getString("Namespace") == moduleName)
+		if (tem.getString("Namespace") == upper)
 		{
 			const_cast<jsonObject&>(tem) = module.getParsedData();
 
@@ -105,7 +108,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
 	if (fdwReason == DLL_PROCESS_ATTACH)
 	{
-		CreateThread(NULL, NULL, playSound, hinstDLL, NULL, NULL);
+		// CreateThread(NULL, NULL, playSound, hinstDLL, NULL, NULL);
 	}
 
 	return true;

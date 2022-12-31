@@ -14,11 +14,38 @@ using namespace std;
 
 namespace utility
 {
-	string getModuleName(const char* moduleName)
+	string getModuleNameLowerCase(const char* moduleName)
 	{
 		string result(moduleName);
 
-		erase(result, ' ');
+		ranges::for_each(result, [](char& c) { c = tolower(c); });
+
+		ranges::replace(result, ' ', '_');
+
+		return result;
+	}
+
+	string getModuleNameUpperCase(const char* moduleName)
+	{
+		string result(moduleName);
+
+		while (result.contains(' '))
+		{
+			size_t position = result.find(' ');
+
+			try
+			{
+				char& nextChar = result.at(position + 1);
+
+				nextChar = toupper(nextChar);
+			}
+			catch (const out_of_range&)
+			{
+
+			}
+
+			result.erase(result.begin() + position);
+		}
 
 		return result;
 	}
@@ -127,7 +154,7 @@ namespace utility
 			{ 'm', { "<more>", '+' } },
 			{ 'l', { "<less>", '-' } }
 		};
-		static unordered_set<char> numericTags =
+		static const unordered_set<char> numericTags =
 		{
 			'a',
 			'A',

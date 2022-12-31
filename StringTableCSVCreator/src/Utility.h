@@ -8,7 +8,9 @@
 
 namespace utility
 {
-	std::string getModuleName(const char* moduleName);
+	std::string getModuleNameLowerCase(const char* moduleName);
+
+	std::string getModuleNameUpperCase(const char* moduleName);
 
 	std::string fromUTF16ToUTF8(const std::filesystem::path& pathToProject);
 
