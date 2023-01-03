@@ -2,15 +2,10 @@
 #include <format>
 #include <fstream>
 
-#include <Windows.h>
-
 #include "Utility.h"
 #include "JSONParser.h"
 #include "JSONBuilder.h"
 #include "RecursiveJSONIterator.h"
-#include "resource.h"
-
-#pragma comment(lib, "Winmm.lib")
 
 #define	EXPORT extern "C" __declspec(dllexport)
 
@@ -95,21 +90,4 @@ EXPORT int applyLocalization(const char* inputModuleName)
 	}
 
 	return utility::save(archive, pathToArchive.string());
-}
-
-DWORD playSound(LPVOID module)
-{
-	PlaySoundW(MAKEINTRESOURCE(IDR_WAVE1), static_cast<HMODULE>(module), SND_RESOURCE);
-
-	return 0;
-}
-
-BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
-{
-	if (fdwReason == DLL_PROCESS_ATTACH)
-	{
-		// CreateThread(NULL, NULL, playSound, hinstDLL, NULL, NULL);
-	}
-
-	return true;
 }

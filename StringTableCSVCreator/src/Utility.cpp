@@ -198,7 +198,7 @@ namespace utility
 
 						if (currentFormat.contains('n'))
 						{
-							if (containsN)
+							if (currentFormat.contains('c'))
 							{
 								replaceString.insert(0, format("{}{}{}{}c{}</>", tag, symbol, '{', currentIndex++, '}'));
 							}
@@ -209,7 +209,7 @@ namespace utility
 						}
 						else
 						{
-							if (containsN)
+							if (currentFormat.contains('c'))
 							{
 								replaceString.insert(0, format("{}{}{}{}c{}%</>", tag, symbol, '{', currentIndex++, '}'));
 							}
@@ -231,9 +231,9 @@ namespace utility
 
 				if (replaceString.empty())
 				{
-					if (currentFormat.contains('n'))
+					if (containsN)
 					{
-						if (containsN)
+						if (currentFormat.contains('c'))
 						{
 							replaceString = format("{}{}c{}", '{', currentIndex++, '}');
 						}
@@ -244,7 +244,7 @@ namespace utility
 					}
 					else
 					{
-						if (containsN)
+						if (currentFormat.contains('c'))
 						{
 							replaceString = format("{}{}c{}%", '{', currentIndex++, '}');
 						}
