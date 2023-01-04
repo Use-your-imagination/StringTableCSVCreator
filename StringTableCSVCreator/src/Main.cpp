@@ -1,6 +1,7 @@
 #include <iostream>
 #include <format>
 #include <fstream>
+#include <sstream>
 
 #include "Utility.h"
 #include "JSONParser.h"
@@ -11,10 +12,13 @@
 
 using namespace std;
 
-EXPORT void createCSV(const char* inputModuleName, const char* inputModuleDescription, const char* inputPlatinumModuleDescription)
+EXPORT void createCSV(const char* moduleName, const char* moduleDescription, const char* platinumModuleDescription)
 {
-	string lower = utility::getModuleNameLowerCase(inputModuleName);
-	string upper = utility::getModuleNameUpperCase(inputModuleName);
+	string lower = utility::getModuleNameLowerCase(moduleName);
+	string upper = utility::getModuleNameUpperCase(moduleName);
+	ostringstream description;
+
+	description << moduleDescription << endl << endl << platinumModuleDescription;
 
 	if (!filesystem::exists("generated_csv"))
 	{
@@ -23,18 +27,22 @@ EXPORT void createCSV(const char* inputModuleName, const char* inputModuleDescri
 
 	ofstream(format("generated_csv\\{}.csv", lower)) << "Key,SourceString" << endl
 		<< format(R"("{}Name","{}")", upper, lower) << endl
-		<< format(R"("{}Description","{}")", upper, utility::convertDescription(inputModuleDescription)) << endl
-		<< format(R"("Platinum{}Description","{}")", upper, utility::convertDescription(inputPlatinumModuleDescription)) << endl;
+		<< format(R"("{}Description","{}")", upper, utility::convertDescription(description.str())) << endl;
 }
 
-EXPORT void createJSON(const char* inputModuleName, const char* inputModuleDescription, const char* inputPlatinumModuleDescription, const char* localizedModuleDescription, const char* localizedPlatinumModuleDescription)
+EXPORT void createJSON(const char* moduleName, const char* moduleDescription, const char* platinumModuleDescription, const char* localizedModuleDescription, const char* localizedPlatinumModuleDescription)
 {
 	using namespace json::utility;
 
-	string lower = utility::getModuleNameLowerCase(inputModuleName);
-	string upper = utility::getModuleNameUpperCase(inputModuleName);
+	string lower = utility::getModuleNameLowerCase(moduleName);
+	string upper = utility::getModuleNameUpperCase(moduleName);
+	ostringstream description;
+	ostringstream localizedDescription;
 	json::JSONBuilder builder(CP_UTF8);
 	vector<jsonObject> children;
+
+	description << moduleDescription << endl << endl << platinumModuleDescription;
+	localizedDescription << localizedModuleDescription << endl << endl << localizedPlatinumModuleDescription;
 
 	if (!filesystem::exists("generated_json"))
 	{
@@ -42,8 +50,7 @@ EXPORT void createJSON(const char* inputModuleName, const char* inputModuleDescr
 	}
 
 	appendArray(utility::makeObject(format("{}Name", upper), lower, lower), children);
-	appendArray(utility::makeObject(upper + "Description", utility::convertDescription(inputModuleDescription), utility::convertDescription(localizedModuleDescription, true)), children);
-	appendArray(utility::makeObject(format("Platinum{}Description", upper), utility::convertDescription(inputPlatinumModuleDescription), utility::convertDescription(localizedPlatinumModuleDescription, true)), children);
+	appendArray(utility::makeObject(upper + "Description", utility::convertDescription(description.str()), utility::convertDescription(localizedDescription.str(), true)), children);
 
 	builder["Namespace"] = upper;
 	builder["Children"] = move(children);
@@ -51,7 +58,7 @@ EXPORT void createJSON(const char* inputModuleName, const char* inputModuleDescr
 	ofstream(format("generated_json\\{}.json", lower)) << builder;
 }
 
-EXPORT int applyLocalization(const char* inputModuleName)
+EXPORT int applyLocalization(const char* moduleName)
 {
 	using json::utility::jsonObject;
 
@@ -71,8 +78,8 @@ EXPORT int applyLocalization(const char* inputModuleName)
 		return 2;
 	}
 
-	string lower = utility::getModuleNameLowerCase(inputModuleName);
-	string upper = utility::getModuleNameUpperCase(inputModuleName);
+	string lower = utility::getModuleNameLowerCase(moduleName);
+	string upper = utility::getModuleNameUpperCase(moduleName);
 	filesystem::path pathToArchive = pathToProject / "Content" / "Localization" / "Game" / "ru" / "Game.archive";
 	json::JSONParser archive(utility::fromUTF16ToUTF8(pathToArchive));
 	json::JSONParser module(ifstream(format("generated_json\\{}.json", lower)));
