@@ -16,9 +16,9 @@ EXPORT void createCSV(const char* moduleName, const char* moduleDescription, con
 {
 	string lower = utility::getModuleNameLowerCase(moduleName);
 	string upper = utility::getModuleNameUpperCase(moduleName);
-	ostringstream description;
+	ostringstream platinumDescription;
 
-	description << moduleDescription << endl << endl << platinumModuleDescription;
+	platinumDescription << moduleDescription << endl << endl << platinumModuleDescription;
 
 	if (!filesystem::exists("generated_csv"))
 	{
@@ -27,7 +27,8 @@ EXPORT void createCSV(const char* moduleName, const char* moduleDescription, con
 
 	ofstream(format("generated_csv\\{}.csv", lower)) << "Key,SourceString" << endl
 		<< format(R"("{}Name","{}")", upper, lower) << endl
-		<< format(R"("{}Description","{}")", upper, utility::convertDescription(description.str())) << endl;
+		<< format(R"("{}Description", "{}")", upper, utility::convertDescription(moduleDescription)) << endl
+		<< format(R"("Platinum{}Description","{}")", upper, utility::convertDescription(platinumDescription.str())) << endl;
 }
 
 EXPORT void createJSON(const char* moduleName, const char* moduleDescription, const char* platinumModuleDescription, const char* localizedModuleDescription, const char* localizedPlatinumModuleDescription)
@@ -36,13 +37,13 @@ EXPORT void createJSON(const char* moduleName, const char* moduleDescription, co
 
 	string lower = utility::getModuleNameLowerCase(moduleName);
 	string upper = utility::getModuleNameUpperCase(moduleName);
-	ostringstream description;
-	ostringstream localizedDescription;
+	ostringstream platinumDescription;
+	ostringstream platinumLocalizedDescription;
 	json::JSONBuilder builder(CP_UTF8);
 	vector<jsonObject> children;
 
-	description << moduleDescription << endl << endl << platinumModuleDescription;
-	localizedDescription << localizedModuleDescription << endl << endl << localizedPlatinumModuleDescription;
+	platinumDescription << moduleDescription << endl << endl << platinumModuleDescription;
+	platinumLocalizedDescription << localizedModuleDescription << endl << endl << localizedPlatinumModuleDescription;
 
 	if (!filesystem::exists("generated_json"))
 	{
@@ -50,7 +51,8 @@ EXPORT void createJSON(const char* moduleName, const char* moduleDescription, co
 	}
 
 	appendArray(utility::makeObject(format("{}Name", upper), lower, lower), children);
-	appendArray(utility::makeObject(upper + "Description", utility::convertDescription(description.str()), utility::convertDescription(localizedDescription.str(), true)), children);
+	appendArray(utility::makeObject(upper + "Description", utility::convertDescription(moduleDescription), utility::convertDescription(localizedModuleDescription, true)), children);
+	appendArray(utility::makeObject(format("Platinum{}Description", upper), utility::convertDescription(platinumDescription.str()), utility::convertDescription(platinumLocalizedDescription.str(), true)), children);
 
 	builder["Namespace"] = upper;
 	builder["Children"] = move(children);
