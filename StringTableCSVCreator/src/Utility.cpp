@@ -148,7 +148,7 @@ namespace utility
 			{ 'a', { "<add>", '+' } },
 			{ 's', { "<subtract>", '-' } },
 			{ 'A', { "<additional>", '+' } },
-			{ 'S', { "<substractional>", '-' } },
+			{ 'S', { "<subtractional>", '-' } },
 			{ 'i', { "<increase>", '+' } },
 			{ 'r', { "<reduce>", '-' } },
 			{ 'm', { "<more>", '+' } },
