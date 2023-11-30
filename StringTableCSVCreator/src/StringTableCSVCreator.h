@@ -1,5 +1,8 @@
-/** @file */
-
+/**
+* @file
+* 
+* Exported functions
+*/
 #pragma once
 
 #define	EXPORT extern "C" __declspec(dllexport)
