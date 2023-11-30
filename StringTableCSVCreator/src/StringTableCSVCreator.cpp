@@ -8,11 +8,9 @@
 #include "JSONBuilder.h"
 #include "RecursiveJSONIterator.h"
 
-#define	EXPORT extern "C" __declspec(dllexport)
-
 using namespace std;
 
-EXPORT void createCSV(const char* moduleName, const char* moduleDescription, const char* platinumModuleDescription)
+void createCSV(const char* moduleName, const char* moduleDescription, const char* platinumModuleDescription)
 {
 	string lower = utility::getModuleNameLowerCase(moduleName);
 	string upper = utility::getModuleNameUpperCase(moduleName);
@@ -31,7 +29,7 @@ EXPORT void createCSV(const char* moduleName, const char* moduleDescription, con
 		<< format(R"("Platinum{}Description","{}")", upper, utility::convertDescription(platinumDescription.str())) << endl;
 }
 
-EXPORT void createJSON(const char* moduleName, const char* moduleDescription, const char* platinumModuleDescription, const char* localizedModuleDescription, const char* localizedPlatinumModuleDescription)
+void createJSON(const char* moduleName, const char* moduleDescription, const char* platinumModuleDescription, const char* localizedModuleDescription, const char* localizedPlatinumModuleDescription)
 {
 	using namespace json::utility;
 
@@ -60,7 +58,7 @@ EXPORT void createJSON(const char* moduleName, const char* moduleDescription, co
 	ofstream(format("generated_json\\{}.json", lower)) << builder;
 }
 
-EXPORT int applyLocalization(const char* moduleName)
+int applyLocalization(const char* moduleName)
 {
 	using json::utility::jsonObject;
 
