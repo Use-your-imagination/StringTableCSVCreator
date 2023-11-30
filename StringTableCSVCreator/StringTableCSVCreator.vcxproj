@@ -53,11 +53,11 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>del $(OutDir)*.lib &amp;&amp; del $(OutDir)*.exp &amp;&amp; copy /y $(OutDir)*.* C:\Users\semen\PycharmProjects\Test</Command>
+      <Command>del $(OutDir)*.lib &amp;&amp; del $(OutDir)*.exp</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\StringTableCSVCreator.cpp" />
     <ClCompile Include="src\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -66,6 +66,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\StringTableCSVCreator.h" />
     <ClInclude Include="src\Utility.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
